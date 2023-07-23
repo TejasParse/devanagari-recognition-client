@@ -3,15 +3,30 @@ import CanvasDraw from "react-canvas-draw";
 import { Button } from "react-bootstrap";
 import { axios } from "axios";
 
+import one from "./images/one.png";
+import two from "./images/two.png";
+import three from "./images/three.png";
+import four from "./images/four.png";
+import five from "./images/five.png";
+import six from "./images/six.png";
+import seven from "./images/seven.png";
+import eight from "./images/eight.png";
+import nine from "./images/nine.png";
+
 const Canvas = (props) => {
     
     let canvasRef = useRef(null);
     const [predictedNumber, setPredictedNumber] = useState(-1)
     let duplicateRef = useRef(null);
+    let [allowed, setAllowed] = useState(true);
 
     let predictData = (event)=>{
 
       console.log(canvasRef.current);
+      setAllowed(false);
+      setTimeout(() => {
+          setAllowed(true)
+      }, 100000);
 
       // canvasRef.current.clear();
       let base64String = canvasRef.current.getDataURL();
@@ -49,10 +64,14 @@ const Canvas = (props) => {
               formData.append("file", blob, "image.jpg");
               const url = URL.createObjectURL(blob);
 
-              fetch("http://127.0.0.1:8000/predict", {
-                method: "POST",
-                body: formData,
-              })
+              fetch(
+                "http://127.0.0.1:8000/predict",
+                // "https://devanagari-recognition-server-production.up.railway.app/predict",
+                {
+                  method: "POST",
+                  body: formData,
+                }
+              )
                 .then((response) => response.json())
                 .then((res) => {
                   console.log(res);
@@ -70,82 +89,93 @@ const Canvas = (props) => {
         img.src = base64String;
 
       }
-      // console.log(base64String);
-
-      // const byteString = atob(base64String.split(",")[1]);
-      // const mimeString = base64String.split(",")[0].split(":")[1].split(";")[0];
-      // console.log(mimeString);
-      // const arrayBuffer = new ArrayBuffer(byteString.length);
-      // console.log(arrayBuffer);
-      // const uint8Array = new Uint8Array(arrayBuffer);
-      // console.log(uint8Array);
-
-      // for (let i = 0; i < byteString.length; i++) {
-      //   uint8Array[i] = byteString.charCodeAt(i);
-      // }
-
-      // const blob = new Blob([arrayBuffer], { type: mimeString });
-
-      // console.log(blob);
-
-      // const formData = new FormData();
-      // formData.append("file", blob, "image.jpg");
-
-      // Send the image file to the backend
-      // fetch("http://127.0.0.1:8000/predict", {
-      //   method: "POST",
-      //   body: formData,
-      // })
-      //   .then((response) =>response.json())
-      //   .then(res=>{
-      //     console.log(res);
-      //     setPredictedNumber(res.predictedNumber);
-      //   })
-      //   .catch((error) => {
-      //     // Handle any errors
-      //   });
-
 
     };
 
 
-
     return (
       <div>
-        <CanvasDraw
-          ref={canvasRef}
-          brushRadius={5}
-          catenaryColor={"#fff"}
-          hideGrid={true}
-          // brushColor={"#fff"}
-          brushColor={"#000"}
-          canvasHeight={200}
-          canvasWidth={200}
-          // imgSrc={
-          //   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAue1E3iTJs-7LIlAlS-G5P1coKNjbcNT-TbNZvziqU2My-l3qWtzGxycQS0sh_rUyZZA&usqp=CAU"
-          // }
-        />
+        <div className="row">
+          <span className="col-2"></span>
 
-        <div className='p-2'>
+          <div className="col-3">
+            <CanvasDraw
+              ref={canvasRef}
+              brushRadius={5}
+              catenaryColor={"#808080"}
+              hideGrid={true}
+              // brushColor={"#fff"}
+              brushColor={"#000"}
+              canvasHeight={200}
+              canvasWidth={200}
+            />
 
-          <Button
-            onClick={() => {
-              console.log(canvasRef);
-              canvasRef.current.clear();
-            }}
-          >
-            Reset
-          </Button>
-          <span>{" "}</span>
+            <div className="pt-3">
+              <Button
+                className="me-4"
+                onClick={() => {
+                  console.log(canvasRef);
+                  canvasRef.current.clear();
+                  setPredictedNumber(-1);
+                }}
+              >
+                Reset
+              </Button>
+              <Button onClick={predictData} disabled={!allowed}>
+                Predict Data
+              </Button>
+            </div>
+          </div>
 
-          <Button onClick={predictData}>Predict Data</Button>
+          <span className="col-2"></span>
+
+          <span className="col-2">
+            <span className="d-flex flex-column bg-dark text-light align-items-center pt-3 rounded">
+              <span>Prediction</span>
+              <span
+                style={{ fontSize: "6em" }}
+                className={`${predictedNumber == -1 ? "invisible" : "visible"}`}
+              >
+                {predictedNumber}
+              </span>
+            </span>
+          </span>
+
+          <span className="col-3"></span>
         </div>
 
+        <div
+          className={`${allowed == true ? "invisible" : "visible"} text-danger pb-3`}
+        >
+          <br /> There is timeout of 100 seconds after every prediction to
+          reduce load on server. It may take over 5-10 seconds to predict
+        </div>
 
-        <div>Prediction {predictedNumber}</div>
+        <div>
+          <div className="pb-3" style={{ fontSize: "1.5em" }}>
+            Since there are several ways to represent certain numbers in
+            devanagari. The model was trained using the following images
+          </div>
+          <div className="d-flex justify-content-between flex-wrap">
+            <img style={{ width: "5em" }} src={one} alt="" />
+            <img style={{ width: "5em" }} src={two} alt="" />
+            <img style={{ width: "5em" }} src={three} alt="" />
+            <img style={{ width: "5em" }} src={four} alt="" />
+            <img style={{ width: "5em" }} src={five} alt="" />
+            <img style={{ width: "5em" }} src={six} alt="" />
+            <img style={{ width: "5em" }} src={seven} alt="" />
+            <img style={{ width: "5em" }} src={eight} alt="" />
+            <img style={{ width: "5em" }} src={nine} alt="" />
+          </div>
+        </div>
 
-
-        <canvas ref={duplicateRef} style={{ visibility: "hidden" }} height={200} width={200} ></canvas>
+        <canvas
+          ref={duplicateRef}
+          // className='invisible'
+          style={{ visibility: "hidden" }}
+          height={200}
+          width={200}
+        ></canvas>
       </div>
     );
 }
