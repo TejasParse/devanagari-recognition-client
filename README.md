@@ -1,5 +1,7 @@
 # Devanagari Handwritten Digit Recognition 
-
+## Model Deployement
+The model is deployed on Railway hosting platform using FastAPI in python  
+[Try it Here](https://shimmering-frangipane-5bd0d2.netlify.app/)
 ## CNN Architecture 
 
 <pre>
